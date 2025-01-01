@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>随机书籍推荐</title>
+    <style>
+        /* 整体页面布局 */
+        body {
+            font-family: 'Georgia', serif; /* 使用经典的阅读字体 */
+            background-color: #f5f5f5; /* 背景色柔和，给人舒适感 */
+            text-align: center;
+            margin: 0;
+            padding: 0;
+            color: #333; /* 深色文本，确保易读性 */
+        }
+        h1 {
+            font-size: 32px;
+            color: #2c3e50;
+            margin-top: 50px;
+            font-weight: normal;
+        }
+        .button {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 12px 28px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 18px;
+            margin: 20px 0;
+            cursor: pointer;
+            border-radius: 5px; /* 按钮圆角 */
+            transition: background-color 0.3s;
+        }
+        .button:hover {
+            background-color: #2980b9; /* 悬停时按钮颜色变化 */
+        }
+        .book-name {
+            font-size: 24px;
+            margin-top: 20px;
+            font-weight: bold;
+            color: #2980b9;
+        }
+        /* 输入框和下拉框样式 */
+        .filters {
+            margin-top: 40px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .filters label {
+            font-size: 18px;
+            color: #2c3e50;
+            margin-top: 15px;
+            margin-bottom: 5px;
+        }
+        .filters select, .filters input {
+            padding: 8px 16px;
+            font-size: 16px;
+            margin-top: 5px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            width: 200px; /* 限制宽度 */
+        }
+        .filters select {
+            height: 36px; /* 限制选择框高度 */
+        }
+        .filters input {
+            height: 30px; /* 限制输入框高度 */
+        }
+        .filters button {
+            margin-top: 15px;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            border-radius: 5px;
+            background-color: #2ecc71;
+            color: white;
+            border: none;
+            transition: background-color 0.3s;
+        }
+        .filters button:hover {
+            background-color: #27ae60; /* 悬停时按钮颜色变化 */
+        }
+    </style>
+</head>
+<body>
+    <h1>欢迎来到随机书籍推荐！</h1>
+    
+    <!-- 筛选条件 -->
+    <div class="filters">
+        <label for="tag">选择标签：</label>
+        <select id="tag">
+            <option value="">全部</option>
+            {% for tag in tags %}
+                <option value="{{ tag }}">{{ tag }}</option>
+            {% endfor %}
+        </select>
+
+        <label for="min_star">最低星级：</label>
+        <input type="number" id="min_star" placeholder="输入最低星级" step="0.1" min="0" />
+
+        <button class="button" onclick="getRandomBook()">筛选并随机选择</button>
+    </div>
+
+    <div class="book-name" id="book-name"></div>
+
+    <script>
+        function getRandomBook() {
+            // 获取用户选择的标签和星级范围
+            const selectedTag = document.getElementById('tag').value;
+            const minStar = document.getElementById('min_star').value || 0;  // 默认为0
+
+            // 发起 GET 请求，带上筛选条件
+            fetch(`/random_book?tag=${selectedTag}&min_star=${minStar}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.message) {
+                        document.getElementById('book-name').innerText = data.message;
+                    } else {
+                        document.getElementById('book-name').innerText = '推荐书籍：' + data.book_name;
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
+        }
+    </script>
+</body>
+</html>

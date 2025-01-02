@@ -1,6 +1,6 @@
 import { error, json } from "@sveltejs/kit";
 import type { RequestHandler } from "./$types";
-import { getGenres } from "$lib/helpers";
+import { getGenres } from "$lib/server/helpers";
 
 export const GET: RequestHandler = ({ url }) => {
   const type = url.searchParams.get("type");

@@ -1,7 +1,9 @@
 import { join } from "path";
-import pl, { type DataFrame, Float64, Series, Utf8 } from "nodejs-polars";
+import * as pl from "nodejs-polars";
+import type { DataFrame, Float64, Series, Utf8 } from "nodejs-polars";
 
-const filepath = join(import.meta.dirname, "merged_douban.csv");
+const filepath = join(process.cwd(), "static", "merged_douban.csv");
+
 export const df = pl.readCSV(filepath, { quoteChar: '""' }) as DataFrame<{
   Item_name: Series<Utf8, "Item_name">;
   Genres: Series<Utf8, "Genres">;

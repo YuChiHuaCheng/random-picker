@@ -1,5 +1,4 @@
 <script lang="ts">
-  import { SvelteMap } from "svelte/reactivity";
   import type { ChangeEventHandler } from "svelte/elements";
   import { enhance } from "$app/forms";
   import type { ActionData, PageData } from "./$types";
@@ -7,8 +6,8 @@
   let { data, form }: { data: PageData; form: ActionData } = $props();
 
   let type = $state<string>();
-  let genresMap = new SvelteMap<string, string[]>();
-  let genres = $derived(genresMap.get(type ?? "") ?? []);
+  let genresMap = $state<Record<string, string[]>>({});
+  let genres = $derived(type ? (genresMap[type] ?? []) : []);
   let genre = $state<string>();
   let score = $state<string>();
 
@@ -17,11 +16,11 @@
   const onTypeChange: ChangeEventHandler<HTMLSelectElement> = (event) => {
     const { value } = event.target as HTMLSelectElement;
     genre = "";
-    if (!genresMap.has(value)) {
+    if (!(value in genresMap) && value) {
       fetch("/api/genres?type=" + value).then((resp) => {
         resp.json().then((data) => {
-          console.log(data);
-          genresMap.set(value, data.genres);
+          genresMap[value] = data.genres;
+          console.log(genresMap);
         });
       });
     }

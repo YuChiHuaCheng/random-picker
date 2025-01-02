@@ -786,8 +786,8 @@ packages:
       yaml:
         optional: true
 
-  vitefu@1.0.4:
-    resolution: {integrity: sha512-y6zEE3PQf6uu/Mt6DTJ9ih+kyJLr4XcSgHR2zUkM8SWDhuixEJxfJ6CZGMHh1Ec3vPLoEA0IHU5oWzVqw8ulow==}
+  vitefu@1.0.5:
+    resolution: {integrity: sha512-h4Vflt9gxODPFNGPwp4zAMZRpZR7eslzwH2c5hn5kNZ5rhnKyRJ50U+yGCdc2IRaBs8O4haIgLNGrV5CrpMsCA==}
     peerDependencies:
       vite: ^3.0.0 || ^4.0.0 || ^5.0.0 || ^6.0.0
     peerDependenciesMeta:
@@ -999,7 +999,7 @@ snapshots:
       magic-string: 0.30.17
       svelte: 5.16.0
       vite: 6.0.6(@types/node@22.10.3)(jiti@2.4.2)(lightningcss@1.28.2)
-      vitefu: 1.0.4(vite@6.0.6(@types/node@22.10.3)(jiti@2.4.2)(lightningcss@1.28.2))
+      vitefu: 1.0.5(vite@6.0.6(@types/node@22.10.3)(jiti@2.4.2)(lightningcss@1.28.2))
     transitivePeerDependencies:
       - supports-color
 
@@ -1362,7 +1362,7 @@ snapshots:
       jiti: 2.4.2
       lightningcss: 1.28.2
 
-  vitefu@1.0.4(vite@6.0.6(@types/node@22.10.3)(jiti@2.4.2)(lightningcss@1.28.2)):
+  vitefu@1.0.5(vite@6.0.6(@types/node@22.10.3)(jiti@2.4.2)(lightningcss@1.28.2)):
     optionalDependencies:
       vite: 6.0.6(@types/node@22.10.3)(jiti@2.4.2)(lightningcss@1.28.2)
 

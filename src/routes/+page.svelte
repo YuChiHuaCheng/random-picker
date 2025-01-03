@@ -50,7 +50,7 @@
   <div
     class="max-w-lg w-full border border-dashed border-neutral-300 rounded-lg p-5"
   >
-    <h1 class="text-center text-3xl">随便看看</h1>
+    <h1 class="text-center text-3xl">随便看点</h1>
 
     <form method="POST" use:enhance class="mt-5 space-y-5">
       <div>
@@ -98,7 +98,7 @@
         <Field {form} name="score">
           <Control>
             {#snippet children({ props })}
-              <Label class="block mb-1 text-neutral-500">最低星级(范围0-5)</Label>
+              <Label class="block mb-1 text-neutral-500">最低评分(范围0-5)</Label>
               <input
                 type="number"
                 {...props}

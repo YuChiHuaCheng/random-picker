@@ -98,7 +98,7 @@
         <Field {form} name="score">
           <Control>
             {#snippet children({ props })}
-              <Label class="block mb-1 text-neutral-500">最低评分</Label>
+              <Label class="block mb-1 text-neutral-500">最低评分(范围0-5)</Label>
               <input
                 type="number"
                 {...props}

@@ -1,90 +1,122 @@
 <script lang="ts">
-  import type { ChangeEventHandler } from "svelte/elements";
-  import { enhance } from "$app/forms";
-  import type { ActionData, PageData } from "./$types";
+  import { SvelteMap } from "svelte/reactivity";
+  import { superForm } from "sveltekit-superforms";
+  import { zodClient } from "sveltekit-superforms/adapters";
+  import { Field, Control, Label } from "formsnap";
+  import type { PageData } from "./$types";
+  import { schema } from "./schema";
+  import type { Resource } from "$lib/server/helper";
 
-  let { data, form }: { data: PageData; form: ActionData } = $props();
+  const { data }: { data: PageData } = $props();
 
-  let type = $state<string>();
-  let genresMap = $state<Record<string, string[]>>({});
-  let genres = $derived(type ? (genresMap[type] ?? []) : []);
-  let genre = $state<string>();
-  let score = $state<string>();
+  let resource = $state<Resource | null | undefined>();
 
-  $inspect(genresMap);
+  const form = superForm(data.form, {
+    validators: zodClient(schema),
+    resetForm: false,
+    onResult: ({ result }) => {
+      if (result.type === "success" && result.data) {
+        const form = result.data["form"];
+        const random = form.message.random as [Resource];
+        resource = random ? random[0] : null;
+      }
+    },
+  });
+  const { form: formData, enhance } = form;
 
-  const onTypeChange: ChangeEventHandler<HTMLSelectElement> = (event) => {
-    const { value } = event.target as HTMLSelectElement;
-    genre = "";
-    if (!(value in genresMap) && value) {
+  const genreMap = new SvelteMap<string, string[]>();
+  const genres = $derived.by(() => {
+    if ($formData.type) {
+      return genreMap.get($formData.type) || [];
+    }
+    return [];
+  });
+
+  const onTypeChange = (event: Event) => {
+    $formData.genre = "";
+    const target = event.target as HTMLSelectElement;
+    const value = target.value;
+    if (value && !genreMap.has(value)) {
       fetch("/api/genres?type=" + value).then((resp) => {
         resp.json().then((data) => {
-          genresMap[value] = data.genres;
-          console.log(genresMap);
+          genreMap.set(value, data.genres);
         });
       });
     }
   };
 </script>
 
-<div class="min-h-svh flex items-center justify-center">
+<main class="min-h-svh flex justify-center p-5">
   <div
-    class="m-5 w-full max-w-lg border border-neutral-200 border-dashed p-5 rounded-xl"
+    class="max-w-lg w-full border border-dashed border-neutral-300 rounded-lg p-5"
   >
-    <h1 class="text-3xl text-center mb-5">随便看点</h1>
+    <h1 class="text-center text-3xl">随便看看</h1>
 
-    <form class="space-y-5" method="POST" use:enhance>
-      <div class="flex flex-col gap-2">
-        <label for="type">选择类型</label>
-        <select
-          bind:value={type}
-          required
-          name="type"
-          id="type"
-          class="border h-10 px-2 focus-within:outline-none rounded border-neutral-200 w-full"
-          onchange={onTypeChange}
-        >
-          <option value="">请选择</option>
-          {#each data.types as item}
-            <option value={item}>{item}</option>
-          {/each}
-        </select>
+    <form method="POST" use:enhance class="mt-5 space-y-5">
+      <div>
+        <Field {form} name="type">
+          <Control>
+            {#snippet children({ props })}
+              <Label class="block mb-1 text-neutral-500">选择类型</Label>
+              <select
+                class="w-full h-10 border px-2 rounded-sm border-neutral-200"
+                {...props}
+                bind:value={$formData.type}
+                onchange={onTypeChange}
+              >
+                <option value="">请选择</option>
+                {#each data.types as item}
+                  <option value={item}>{item}</option>
+                {/each}
+              </select>
+            {/snippet}
+          </Control>
+        </Field>
       </div>
 
-      <div class="flex flex-col gap-2">
-        <label for="genre">选择标签</label>
-        <select
-          bind:value={genre}
-          required
-          name="genre"
-          id="genre"
-          class="border h-10 px-2 focus-within:outline-none rounded border-neutral-200 w-full"
-        >
-          <option value="">请选择</option>
-          {#each genres as item}
-            <option value={item}>{item}</option>
-          {/each}
-        </select>
+      <div>
+        <Field {form} name="genre">
+          <Control>
+            {#snippet children({ props })}
+              <Label class="block mb-1 text-neutral-500">选择标签</Label>
+              <select
+                class="w-full h-10 border px-2 rounded-sm border-neutral-200"
+                {...props}
+                bind:value={$formData.genre}
+              >
+                <option value="">请选择</option>
+                {#each genres as item}
+                  <option value={item}>{item}</option>
+                {/each}
+              </select>
+            {/snippet}
+          </Control>
+        </Field>
       </div>
 
-      <div class="flex flex-col gap-2">
-        <label for="score">最低评分</label>
-        <input
-          bind:value={score}
-          required
-          type="number"
-          name="score"
-          id="score"
-          placeholder="请输入最低评分"
-          min="0"
-          step="0.1"
-          class="h-10 px-2 border border-neutral-200 focus-within:outline-none rounded w-full"
-        />
+      <div>
+        <Field {form} name="score">
+          <Control>
+            {#snippet children({ props })}
+              <Label class="block mb-1 text-neutral-500">最低评分</Label>
+              <input
+                type="number"
+                {...props}
+                required
+                placeholder="请输入最低评分"
+                bind:value={$formData.score}
+                min="0"
+                step="0.1"
+                class="h-10 px-2 border border-neutral-200 rounded-sm w-full"
+              />
+            {/snippet}
+          </Control>
+        </Field>
       </div>
 
       <button
         type="submit"
-        class="h-10 w-full group px-4 py-1 rounded-lg font-medium bg-linear-to-b from-neutral-800 to-neutral-900 text-neutral-50 shadow-md shadow-black/15 border border-neutral-950 inset-shadow-[0_1px_0px_0px] inset-shadow-white/70 active:inset-shadow-none transition"
+        class="h-10 w-full group px-4 py-1 rounded-sm font-medium bg-linear-to-b from-neutral-700 to-neutral-800 text-neutral-50 shadow-md shadow-black/15 border border-neutral-950 inset-shadow-[0_1px_0px_0px] inset-shadow-white/70 active:inset-shadow-none transition"
       >
         <span class="block transform-3d group-active:translate-y-px">
           随便看看
@@ -92,18 +124,15 @@
       </button>
     </form>
 
-    <div
-      class="p-4 min-h-20 bg-neutral-100 rounded mt-5 flex items-center justify-center"
-    >
-      {#if form?.success}
-        <p>
-          <span class="font-semibold">{form.data.type}：</span>《{form.data
-            .name}》
-        </p>
-      {/if}
-      {#if form?.missing}
-        <p class="text-red-500">没有符合条件的项目</p>
-      {/if}
-    </div>
+    {#if resource !== undefined}
+      <div class="p-10 mt-5 min-h-24 rounded-sm bg-neutral-100 relative">
+        {#if resource === null}
+          <p class="text-center text-neutral-500">没有找到符合条件的资源</p>
+        {:else}
+          <h3 class="text-center text-neutral-500">{resource.Type}</h3>
+          <p class="text-center">《{resource.Item_name}》</p>
+        {/if}
+      </div>
+    {/if}
   </div>
-</div>
+</main>

@@ -1,5 +1,5 @@
 {
-	"name": "dice",
+	"name": "random-picker",
 	"private": true,
 	"version": "0.0.1",
 	"type": "module",
@@ -15,14 +15,16 @@
 		"@sveltejs/kit": "^2.15.1",
 		"@sveltejs/vite-plugin-svelte": "^4.0.4",
 		"@tailwindcss/vite": "4.0.0-beta.8",
-		"@types/node": "^22.10.3",
+		"formsnap": "^2.0.0",
 		"lucide-svelte": "^0.469.0",
 		"nodejs-polars": "^0.17.0",
-		"svelte": "^5.16.0",
+		"svelte": "^5.16.1",
 		"svelte-check": "^4.1.1",
+		"svelte-copy": "^2.0.0",
+		"sveltekit-superforms": "^2.22.1",
 		"tailwindcss": "4.0.0-beta.8",
 		"typescript": "^5.7.2",
-		"vite": "^6.0.6",
+		"vite": "^5.4.11",
 		"zod": "^3.24.1"
 	}
 }

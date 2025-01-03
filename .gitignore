@@ -20,5 +20,6 @@ _site/
 
 config.yaml
 .venv/
+.env
 .ropeproject
 venv

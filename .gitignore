@@ -23,3 +23,4 @@ config.yaml
 .env
 .ropeproject
 venv
+.vercel

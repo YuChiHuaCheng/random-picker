@@ -1,6 +1,6 @@
 import pandas as pd
 from flask import Flask, render_template, jsonify, request
-import psycopg2
+import pg8000
 from dotenv import load_dotenv
 import os
 from typing import Optional, List
@@ -15,19 +15,25 @@ HOST = os.getenv("host")
 PORT = os.getenv("port")
 DBNAME = os.getenv("dbname")
 
+# Ensure required environment variables are set
+if not all([USER, PASSWORD, HOST, PORT, DBNAME]):
+    raise ValueError("Missing required environment variables for database connection.")
+
+# Convert PORT to integer
+PORT = int(PORT)  # Ensure PORT is an integer
+
 # Create Flask application
 app = Flask(__name__, static_folder='static', template_folder='templates')
 
-def get_db_connection() -> Optional[psycopg2.extensions.connection]:
+def get_db_connection() -> Optional[pg8000.Connection]:
     """Create and return a database connection"""
     try:
-        connection = psycopg2.connect(
+        connection = pg8000.connect(
             user=USER,
             password=PASSWORD,
             host=HOST,
             port=PORT,
-            dbname=DBNAME,
-            client_encoding='utf8'  # Explicitly set client encoding
+            database=DBNAME
         )
         return connection
     except Exception as e:
@@ -66,6 +72,7 @@ def get_data_from_db() -> pd.DataFrame:
             decoded_row = [item.decode('utf-8') if isinstance(item, bytes) else item for item in row]
             decoded_data.append(decoded_row)
 
+        # Create DataFrame with explicit column names
         df = pd.DataFrame(decoded_data, columns=columns)
         df['Score'] = pd.to_numeric(df['Score'], errors='coerce')  # Convert Score column to numeric type
         return df
@@ -129,10 +136,10 @@ def random_item():
 
     # Randomly select an item
     random_row = filtered_df.sample(n=1)
-    item_name = random_row['Item_name'].values[0]
+    item_name = random_row['Item_name'].values[0]  # Access the first value in the 'Item_name' column
     response = jsonify({'item_name': f'《{item_name}》'})  # Return item name
     response.headers['Content-Type'] = 'application/json; charset=utf-8'  # Set response header
     return response
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(host='0.0.0.0', port=5000)

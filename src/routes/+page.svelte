@@ -3,6 +3,7 @@
   import { superForm } from "sveltekit-superforms";
   import { zodClient } from "sveltekit-superforms/adapters";
   import { Field, Control, Label } from "formsnap";
+  import { Loader } from "lucide-svelte";
   import type { PageData } from "./$types";
   import { schema } from "./schema";
   import type { Resource } from "$lib/server/helper";
@@ -22,7 +23,7 @@
       }
     },
   });
-  const { form: formData, enhance } = form;
+  const { form: formData, enhance, delayed } = form;
 
   const genreMap = new SvelteMap<string, string[]>();
   const genres = $derived.by(() => {
@@ -59,7 +60,7 @@
             {#snippet children({ props })}
               <Label class="block mb-1 text-neutral-500">选择类型</Label>
               <select
-                class="w-full h-10 border px-2 rounded-sm border-neutral-200"
+                class="w-full h-10 border px-2 rounded-md border-neutral-200"
                 {...props}
                 bind:value={$formData.type}
                 onchange={onTypeChange}
@@ -80,7 +81,7 @@
             {#snippet children({ props })}
               <Label class="block mb-1 text-neutral-500">选择标签</Label>
               <select
-                class="w-full h-10 border px-2 rounded-sm border-neutral-200"
+                class="w-full h-10 border px-2 rounded-md border-neutral-200"
                 {...props}
                 bind:value={$formData.genre}
               >
@@ -98,7 +99,9 @@
         <Field {form} name="score">
           <Control>
             {#snippet children({ props })}
-              <Label class="block mb-1 text-neutral-500">最低评分(范围0-5)</Label>
+              <Label class="block mb-1 text-neutral-500"
+                >最低评分(范围0-5)</Label
+              >
               <input
                 type="number"
                 {...props}
@@ -106,8 +109,9 @@
                 placeholder="请输入最低评分"
                 bind:value={$formData.score}
                 min="0"
+                max="5"
                 step="0.1"
-                class="h-10 px-2 border border-neutral-200 rounded-sm w-full"
+                class="h-10 px-2 border border-neutral-200 rounded-md w-full"
               />
             {/snippet}
           </Control>
@@ -115,17 +119,27 @@
       </div>
 
       <button
+        disabled={$delayed}
         type="submit"
-        class="h-10 w-full group px-4 py-1 rounded-sm font-medium bg-linear-to-b from-neutral-700 to-neutral-800 text-neutral-50 shadow-md shadow-black/15 border border-neutral-950 inset-shadow-[0_1px_0px_0px] inset-shadow-white/70 active:inset-shadow-none transition"
+        class={[
+          "h-10 w-full px-4 rounded-md font-medium group",
+          "flex items-center justify-center",
+          "transition bg-blue-500 text-blue-50",
+          "inset-shadow-sm inset-shadow-white/20 ring ring-blue-600 inset-ring inset-ring-white/15",
+        ]}
       >
-        <span class="block transform-3d group-active:translate-y-px">
-          随便看看
-        </span>
+        {#if $delayed}
+          <Loader class="size-5 animate-spin" />
+        {:else}
+          <span class="block transform-3d group-active:translate-y-px">
+            随便看看
+          </span>
+        {/if}
       </button>
     </form>
 
     {#if resource !== undefined}
-      <div class="p-10 mt-5 min-h-24 rounded-sm bg-neutral-100 relative">
+      <div class="p-10 mt-5 min-h-24 rounded-md bg-neutral-100 relative">
         {#if resource === null}
           <p class="text-center text-neutral-500">没有找到符合条件的资源</p>
         {:else}

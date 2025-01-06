@@ -3,7 +3,8 @@
   import { superForm } from "sveltekit-superforms";
   import { zodClient } from "sveltekit-superforms/adapters";
   import { Field, Control, Label } from "formsnap";
-  import { Loader } from "lucide-svelte";
+  import { Check, Clipboard, Loader } from "lucide-svelte";
+  import { copyText } from "svelte-copy";
   import type { PageData } from "./$types";
   import { schema } from "./schema";
   import type { Resource } from "$lib/server/helper";
@@ -12,6 +13,7 @@
 
   let resource = $state<Resource | null | undefined>();
   let loading = $state(false);
+  let copied = $state(false);
 
   const form = superForm(data.form, {
     validators: zodClient(schema),
@@ -150,6 +152,23 @@
         {:else}
           <h3 class="text-center text-neutral-500">{resource.Type}</h3>
           <p class="text-center">《{resource.Item_name}》</p>
+
+          <button
+            class="absolute right-2 top-2"
+            onclick={() => {
+              copyText(resource!.Item_name);
+              copied = true;
+              setTimeout(() => {
+                copied = false;
+              }, 2000);
+            }}
+          >
+            {#if copied}
+              <Check class="size-5 text-green-500" />
+            {:else}
+              <Clipboard class="size-5 text-neutral-500" />
+            {/if}
+          </button>
         {/if}
       </div>
     {/if}

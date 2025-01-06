@@ -11,19 +11,24 @@
   const { data }: { data: PageData } = $props();
 
   let resource = $state<Resource | null | undefined>();
+  let loading = $state(false);
 
   const form = superForm(data.form, {
     validators: zodClient(schema),
     resetForm: false,
     onResult: ({ result }) => {
+      loading = false;
       if (result.type === "success" && result.data) {
         const form = result.data["form"];
         const random = form.message.random as [Resource];
         resource = random ? random[0] : null;
       }
     },
+    onSubmit: () => {
+      loading = true;
+    },
   });
-  const { form: formData, enhance, delayed } = form;
+  const { form: formData, enhance } = form;
 
   const genreMap = new SvelteMap<string, string[]>();
   const genres = $derived.by(() => {
@@ -119,7 +124,7 @@
       </div>
 
       <button
-        disabled={$delayed}
+        disabled={loading}
         type="submit"
         class={[
           "h-10 w-full px-4 rounded-md font-medium group",
@@ -128,7 +133,7 @@
           "inset-shadow-sm inset-shadow-white/20 ring ring-blue-600 inset-ring inset-ring-white/15",
         ]}
       >
-        {#if $delayed}
+        {#if loading}
           <Loader class="size-5 animate-spin" />
         {:else}
           <span class="block transform-3d group-active:translate-y-px">

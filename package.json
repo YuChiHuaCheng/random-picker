@@ -12,19 +12,24 @@
   },
   "devDependencies": {
     "@sveltejs/adapter-auto": "^3.3.1",
-    "@sveltejs/kit": "^2.17.0",
+    "@sveltejs/kit": "^2.20.1",
     "@sveltejs/vite-plugin-svelte": "^4.0.4",
-    "@tailwindcss/vite": "^4.0.3",
+    "@tailwindcss/vite": "^4.0.14",
     "formsnap": "^2.0.0",
     "lucide-svelte": "^0.469.0",
-    "nodejs-polars": "^0.17.0",
-    "svelte": "^5.19.6",
-    "svelte-check": "^4.1.4",
+    "nodejs-polars": "^0.18.0",
+    "svelte": "^5.23.2",
+    "svelte-check": "^4.1.5",
     "svelte-copy": "^2.0.0",
-    "sveltekit-superforms": "^2.23.1",
-    "tailwindcss": "^4.0.3",
-    "typescript": "^5.7.3",
+    "sveltekit-superforms": "^2.24.0",
+    "tailwindcss": "^4.0.14",
+    "typescript": "^5.8.2",
     "vite": "^5.4.14",
-    "zod": "^3.24.1"
+    "zod": "^3.24.2"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "esbuild"
+    ]
   }
 }
